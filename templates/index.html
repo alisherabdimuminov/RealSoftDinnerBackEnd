@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Autour+One&display=swap" rel="stylesheet">
+    <title>RealSoftDinner</title>
+</head>
+<body>
+    <style>
+        :root {
+            --primary-color: #07afd9;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #1e2b35;
+            font-family: 'Autour One';
+            margin: 10px;
+        }
+        input[type="radio"]{
+            display: none;
+        }
+        label{
+            width: 100%;
+            position: relative;
+            color: #fff;
+            cursor: pointer;
+            display: inline-flex;
+            gap: 0.8em;
+            border: 1px solid #fff;
+            padding: 1em 2em;
+            border-radius: 0.5em;
+            align-items: center;
+        }
+        label::before{
+            content: "";
+            height: 10px;
+            width: 10px;
+            border: 3px solid #fff;
+            border-radius: 50%;
+        }
+
+        input[type="radio"]:checked + label::before{
+            border: 3px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        input[type="radio"]:checked + label {
+            border: 3px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        input[type="number"] {
+            border: 1px solid #ccc;
+            background: transparent;
+            outline: none;
+            border-radius: 8px;
+            width: 100%;
+            height: 40px;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            padding: 5px;
+        }
+
+        .food {
+            margin: 10px;
+        }
+        button {
+            border: none;
+            background-color: #5BC8FB;
+            color: white;
+            width: 100%;
+            height: 50px;
+            font-size: 20px;
+            font-family: monospace;
+        }
+    </style>
+    <div class="foods">
+        <center style="color: white;"><h1>RealSoft dinner</h1></center>
+        {% for food in foods %}
+            <div class="food">
+                <input type="radio" price="{{ food.price }}" onchange="onChange()" name="food" id="food{{forloop.counter}}" value="{{ food.name }}" required>
+                <label for="food{{ forloop.counter }}">{{ food.name }} - {{ food.price }} so'm</label>
+            </div>
+        {% endfor %}
+        <div class="food">
+            <p style="color: white;">Soni:</p>
+            <input type="number" name="count" id="count" value="1" required>
+        </div>
+        <div>
+            <p id="order_food" style="color: white;"></p>
+            <p id="price" style="color: white;"></p>
+        </div>
+        <input type="hidden" name="user_id" id="user_id"  />
+        <input type="hidden" name="user_name" id="user_name" />
+        <button id="order">Buyurtma berish</button>
+    </div>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        function onChange(event) {
+            let foods = document.getElementsByName("food");
+            let price = document.getElementById("price");
+            let food = document.getElementById("order_food");
+            for (let i = 0; i < foods.length; i++) {
+                // console.log(foods[i])
+                if (foods[i].checked) {
+                    console.log(foods[i].value)
+                    food.innerText = `Food: ${foods[i].value}`;
+                    let count = document.getElementById("count");
+                    let total = parseInt(foods[i].getAttribute("price"));
+                    price.innerHTML = `Total price: ${total * parseInt(count.value)} so'm`;
+                }
+            }
+        }
+        let input = document.getElementById("count");
+        input.addEventListener("input", onChange)
+    </script>
+    <script>
+        let tg = window.Telegram.WebApp;
+        let order = document.getElementById("order");
+        let user_id = document.getElementById("user_id");
+        let user_name = document.getElementById("user_name");
+        user_id.innerHTML = `${tg.initDataUnsafe.user.id}`;
+        user_name = `${tg.initDataUnsafe.user.username}`
+
+        order.addEventListener("click", () => {
+            tg.sendData("salom");
+            tg.close();
+        })
+    </script>
+</body>
+</html>
